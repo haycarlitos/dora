@@ -6,11 +6,20 @@ from .models import License
 
 class LicenseModelTests(TestCase):
 
+    def test_is_not_expired(self):
+        """
+        is_expired() returns False if the
+        license is not expired.
+        """
+        time = timezone.now() + datetime.timedelta(days=30)
+        future_question = License(expiration_date=time )
+        self.assertIs(future_question.is_expired(), False)
+
     def test_is_expired(self):
         """
         is_expired() returns True if the
         license is expired.
         """
-        time = timezone.now() + datetime.timedelta(days=30)
+        time = timezone.now() - datetime.timedelta(days=30)
         future_question = License(expiration_date=time )
-        self.assertIs(future_question.is_expired(), False)
+        self.assertIs(future_question.is_expired(), True)
