@@ -1,3 +1,16 @@
+import datetime
 from django.test import TestCase
+from django.utils import timezone
+from .models import License
 
-# Create your tests here.
+
+class LicenseModelTests(TestCase):
+
+    def test_is_expired(self):
+        """
+        is_expired() returns False for questions whose pub_date
+        is in the future.
+        """
+        time = timezone.now() + datetime.timedelta(days=30)
+        future_question = License(expiration_date=time )
+        self.assertIs(future_question.is_expired(), False)

@@ -20,8 +20,13 @@ class License(models.Model):
     def __str__(self):
         return self.package_name
 
-    def expiration(self):
-        return self.expiration_date - timezone.now()
+    def is_expired(self):
+
+        if self.expiration_date > datetime.datetime.now(timezone.utc):
+            return False
+        else:
+            return True
+
 
     
 
