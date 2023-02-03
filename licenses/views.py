@@ -18,7 +18,18 @@ class ClientDetailView(TemplateView):
 '''        
 from django.http import HttpResponse
 
+from .models import Client, License
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    licenses_list = License.objects.order_by('-expiration_date')[:5]
+    output = ', '.join([q.package_name for q in licenses_list])
+    return HttpResponse(output)
+
+def client(request, client_id):
+    return HttpResponse("You're looking at client %s." % client_id)
+
+def license(request, license_id):
+    response = "You're looking at the results of question %s."
+    return HttpResponse(response % license_id)
+
 
