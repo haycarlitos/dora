@@ -3,19 +3,23 @@ from .models import Client, License
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404, render
 
+'''
 class ClientDetailView(TemplateView):
     """A view to show the details of a particular client and their license information.
     """
-    template_name = 'client_detail.html'
+    template_name = 'licenses/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         client_id = self.kwargs.get('client_id')
         client = Client.objects.get(pk=client_id)
         licenses = client.licenses.all()
-        context['client'] = client
-        context['licenses'] = licenses
+        context = {
+            'client': client,
+            'licenses': licenses,
+        }
         return context
+'''
 
 def index(request):
     client = Client.objects.get(pk=1)
