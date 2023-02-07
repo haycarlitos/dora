@@ -1,0 +1,19 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'licenses/style.css' %}">
+{% if licenses %}
+<p>Dear, {{ client.name }}</p>
+<p>The following active licenses are associated with your account:</p>
+
+<ul>
+{% for license in licenses %}
+    <li>License ID: {{ license.license_id }}</li>
+    <li>License Type: {{ license.license_type }}</li>
+    <li>Package Name: {{ license.package_name }}</li>
+    <li>Expiration Date: {{ license.expiration_date }}</li>
+    <br>
+{% endfor %}
+</ul>
+{% else %}
+    <p>There is no active license for this client.</p>
+{% endif %}

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!y82b-!(qlp2t3h3)b@9u*@y%$bnn$@to9+_y#7cai_8s4u7ei
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -122,3 +122,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+EMAIL_HOST = 'SMTP_HOST'
+
+EMAIL_PORT = 'SMTP_PORT'
+
+EMAIL_HOST_USER = 'SMTP_USER'
+
+EMAIL_HOST_PASSWORD = 'SMTP_PASSWORD'
+
+EMAIL_USE_TLS = True # TLS settings
+
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
+

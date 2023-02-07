@@ -1,20 +1,16 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'licenses/style.css' %}">
-<p>Dear {{ client.name }},</p>
-<p>This is a notification that the following licenses associated with your account are set to expire soon:</p>
+<p>This is a list of companies that already trust in Dora:</p>
 
 <ul>
-{% for license in licenses %}
-    <li>License ID: <a href="{% url 'licenses:detail' license.id %}">{{ license.license_id }}</a></li>
-    <li>License Type: {{ license.license_type }}</li>
-    <li>Package Name: {{ license.package_name }}</li>
-    <li>Expiration Date: {{ license.expiration_date }}</li>
-    <li>Contact Email: {{ client.email }}</li>
+{% for client in client_list %}
+    <li><a href="{% url 'licenses:client' client.id %}">{{ client.name }}</a></li>
+
 {% endfor %}
 </ul>
 
-<p>If you have any questions or concerns, please reach out to us at {{ client.email }}.</p>
+<p>If you have any questions or concerns, please reach out to us at support@holadora.co.</p>
 
 <p>Thanks,</p>
-<p>The License Team</p>
+<p>Dora Team</p>

@@ -1,0 +1,138 @@
+#Crear carpetas y archivos
+
+mkdir LicensingApp
+cd LicensingApp
+
+#Crear una carpeta para la aplicación
+
+mkdir app
+
+#Crear una carpeta para las pruebas de la aplicación
+
+mkdir tests
+
+#Crear una carpeta para los requerimientos
+
+mkdir requirements
+
+#Crear un archivo para los requerimientos
+
+touch requirements.txt
+
+#Agregar los requerimientos al archivo
+
+echo "Python>=v3.9 \n Django LTS>=v3.2 \n type hints" > requirements.txt
+
+#Crear una carpeta para los archivos de configuración
+
+mkdir config
+
+#Crear un archivo para la configuración de Django
+
+touch config/settings.py
+
+#Crear una carpeta para los archivos de código
+
+mkdir src
+
+#Crear un archivo para la lógica de envío de correo
+
+touch src/mail_sender.py
+
+#Agregar el código necesario para enviar correos electrónicos a los clientes
+
+#Agregar código para la lógica de validación de las licencias.
+
+touch src/license_validator.py
+
+#Agregar el código necesario para validar las licencias
+
+#Crear una carpeta para los archivos de vista
+
+mkdir src/views
+
+#Crear un archivo para la vista de resumen de notificaciones
+
+touch src/views/notification_summary.py
+
+#Agregar el código necesario para mostrar el resumen de notificaciones
+
+#Crear un archivo para la vista de lista de empresas
+
+touch src/views/company_list.py
+
+#Agregar el código necesario para mostrar la lista de empresas
+
+#Crear un archivo para la vista de lista de licencias
+
+touch src/views/license_list.py
+
+#Agregar el código necesario para mostrar la lista de licencias
+
+#Crear un archivo para el docker-compose
+
+touch docker-compose.yml
+
+#Agregar el código necesario para ejecutar la aplicación en docker
+
+#Crear un archivo de tareas de fondo
+
+touch src/background_tasks.py
+
+#Agregar el código necesario para ejecutar las tareas de fondo
+
+from django.db import models
+from django.core.mail import send_mail, EmailMessage
+from django.core.mail.backends.locmem import EmailBackend
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+
+# Create your models here.
+class Client(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+
+class License(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    license_id = models.IntegerField()
+    license_type = models.CharField(max_length=255)
+    package_name = models.CharField(max_length=255)
+    expiration_date = models.DateTimeField()
+
+# Create a validation to check expiration date
+def check_expiration_date(value):
+    if value < timezone.now():
+        raise ValidationError('License expiration date cannot be in the past')
+
+# Create a validation to check expiration date
+def check_expiration_period(value):
+    if value.expiration_date > timezone.now() + timezone.timedelta(weeks=4):
+        raise ValidationError('License expiration date must be within 4 weeks')
+
+# Create a function to send email
+def send_reminder_email(client):
+    # Get the licenses for the client
+    licenses = License.objects.filter(client=client)
+    # Set up the email
+    subject = "License expiration reminder"
+    message = render_to_string('reminder_email.html', {'client': client, 'licenses': licenses})
+    # Send the email
+    email = EmailMessage(subject, message, to=[client.email])
+    email.send()
+
+# Create a task to check for expiration
+@periodic_task(run_every=timezone.timedelta(weeks=1))
+def check_license_expiration():
+    # Get all clients with licenses
+    clients = Client.objects.filter(license__isnull=False).distinct()
+    # Loop through each client
+    for client in clients:
+        # Get the licenses for the client
+        licenses = License.objects.filter(client=client)
+        # Check if any licenses are within 4 months of expiring
+        four_months = timezone.now() + timezone.timedelta(weeks=4)
+        expiring_licenses = licenses.filter(expiration_date__lte=four_months)
+        # Send an email if any licenses are expiring soon
+        if expiring_licenses.exists():
+            send_reminder_email(client)

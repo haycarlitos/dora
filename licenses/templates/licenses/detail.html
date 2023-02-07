@@ -1,1 +1,10 @@
-<h1>{{ license.license_id}}</h1>
+{% if client_list %}
+    <h1>Our clients</h1>
+    <ul>
+    {% for client in client_list %}
+        <li><a href="/clients/{{ client.id }}/">{{ client.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No client are available.</p>
+{% endif %}

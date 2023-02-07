@@ -22,7 +22,7 @@ class License(models.Model):
 
     def is_expired(self):
 
-        if self.expiration_date > datetime.datetime.now(timezone.utc):
+        if self.expiration_date > timezone.now().date():
             return False
         else:
             return True
